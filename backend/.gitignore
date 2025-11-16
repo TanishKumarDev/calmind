@@ -1,0 +1,34 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+.pnpm-store/
+dist/
+build/
+
+# OS / System
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+logs/*.log
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# TypeScript output
+*.tsbuildinfo
+
+# Git internal backup
+.git/
