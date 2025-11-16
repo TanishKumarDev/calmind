@@ -1,14 +1,28 @@
+// ============================================================================
+// Chat API Route: Create a New Chat Session
+// Next.js App Router API (Server Endpoint)
+// ----------------------------------------------------------------------------
+// Forwards request to backend Express API at BACKEND_API_URL
+// Requires Authorization header (Bearer token).
+// ============================================================================
+
 import { NextRequest, NextResponse } from "next/server";
 
+// Backend URL (fallback if env missing)
 const BACKEND_API_URL =
   process.env.BACKEND_API_URL ||
   "https://ai-therapist-agent-backend.onrender.com";
 
-export async function POST(req: NextRequest) {
+// -----------------------------------------------------------------------------
+// POST /api/chat/sessions
+// Creates a new chat session for the authenticated user
+// -----------------------------------------------------------------------------
+export async function POST(request: NextRequest) {
   try {
-    console.log("Creating new chat session...");
-    const authHeader = req.headers.get("Authorization");
+    console.log("[Chat] Creating new chat session...");
 
+    // Extract JWT / Auth header
+    const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(
         { error: "Authorization header is required" },
@@ -16,6 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Call backend API
     const response = await fetch(`${BACKEND_API_URL}/chat/sessions`, {
       method: "POST",
       headers: {
@@ -24,23 +39,30 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Handle backend error
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Failed to create chat session:", error);
-      return NextResponse.json(
-        { error: error.error || "Failed to create chat session" },
-        { status: response.status }
-      );
+      let errorMessage = "Failed to create chat session";
+      try {
+        const err = await response.json();
+        errorMessage = err.message || err.error || errorMessage;
+      } catch {}
+      console.error("[Chat] Backend error:", errorMessage);
+      return NextResponse.json({ error: errorMessage }, { status: response.status });
     }
 
+    // Return backend success
     const data = await response.json();
-    console.log("Chat session created:", data);
+    console.log("[Chat] Session created:", data);
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error creating chat session:", error);
+    console.error("[Chat] Unexpected error:", error);
     return NextResponse.json(
-      { error: "Failed to create chat session" },
+      { error: "Server error: failed to create chat session" },
       { status: 500 }
     );
   }
 }
+
+// ============================================================================
+// End of file
+// ============================================================================
