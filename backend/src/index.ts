@@ -74,6 +74,7 @@ app.use(
   serve({
     client: inngest,
     functions: inngestFunctions,
+    signingKey: process.env.INNGEST_SIGNING_KEY, // REQUIRED FOR INNGEST CLOUD AUTH
   })
 );
 
